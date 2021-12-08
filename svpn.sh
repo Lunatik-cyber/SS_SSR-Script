@@ -536,7 +536,7 @@ ${msg[20]}"
 	[[ -z "${port}" ]] && port="1"
 	if [[ ${port} == "1" ]]; then
 		echo -e "${msg[22]}"
-		ssr_port=$(shuf -i 1000-9999 -n 1)
+		ssr_port=$(shuf -i 444-999 -n 1)
 		echo && echo ${Separator_1} && echo -e "	${msg[2]} ${Green}${ssr_port}${Font_end}" && echo ${Separator_1} && echo
 	elif [[ ${how_to_port} == "2" ]]; then
 		while true; do
