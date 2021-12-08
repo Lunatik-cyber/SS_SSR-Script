@@ -1046,9 +1046,9 @@ menu(){
 		;;
 		9)
 			clear
-		  Uninstall_SSR
-	  ;;
-	  10)
+		 	Uninstall_SSR
+	  	;;
+	  	10)
 			clear
 			Modify_language
 		;;
