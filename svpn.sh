@@ -920,9 +920,10 @@ List_port_user(){
 		user_username=$(echo "${user_info}"|sed -n "${integer}p"|awk '{print $2}'|sed 's/\[//g;s/\]//g')
 		Get_User_transfer "${user_port}"
 		transfer_enable_Used_233=$(echo $((${transfer_enable_Used_233}+${transfer_enable_Used_2_1})))
-		user_list_all=${user_list_all}"Пользователь: ${Green} "${user_username}"${Font_color_suffix} Порт: ${Green}"${user_port}"${Font_color_suffix} Трафик: ${Green}${transfer_enable_Used_2}${Font_color_suffix}\n"
+		user_list_all=${user_list_all}"${msg[35]}: ${Green} "${user_username}"${Font_color_suffix} ${msg[2]} ${Green}"${user_port}"${Font_color_suffix} ${msg[40]} ${Green}${transfer_enable_Used_2}${Font_color_suffix}\n"
 	done
 	echo && echo -e "${msg[41]} ${Green} "${user_total}" ${Font_color_suffix}"
+	echo Separator_1
 	echo -e ${user_list_all}
 
 }
