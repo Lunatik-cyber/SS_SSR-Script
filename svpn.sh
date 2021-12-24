@@ -110,6 +110,7 @@ message_en=( "English" # 0
     		 "Number of IP addresses:" # 38
     		 "Connected:" # 39
     		 "Traffic:" # 40
+			 "All Users" # 41
 )
 
 setup_en=( "English" # 0
@@ -912,11 +913,18 @@ List_port_user(){
 	user_info=$(python mujson_mgr.py -l)
 	user_total=$(echo "${user_info}"|wc -l)
 	[[ -z ${user_info} ]] && echo -e "${msg[35]}" && read -n1 -r -p "${msg[1]}"	&& menu
-	user_port=$(echo "${user_info}"|sed -n "1p"|awk '{print $4}')
-	user_username=$(echo "${user_info}"|sed -n "1p"|awk '{print $2}'|sed 's/\[//g;s/\]//g')
-	Get_User_transfer "${user_port}"
-	transfer_enable_Used_233=$(echo $((${transfer_enable_Used_233}+${transfer_enable_Used_2_1})))
-	echo -e "${msg[35]} ${Green}${user_username}${Font_end} | ${msg[2]} ${Green}${user_port}${Font_end} | ${msg[40]} ${Green}${transfer_enable_Used_2}${Font_end}"
+	user_list_all=""
+	for ((integer=1; integer <= $user_total; integer++))
+	do
+		user_port=$(echo "${user_info}"|sed -n "${integer}p"|awk '{print $4}')
+		user_username=$(echo "${user_info}"|sed -n "${integer}p"|awk '{print $2}'|sed 's/\[//g;s/\]//g')
+		Get_User_transfer "${user_port}"
+		transfer_enable_Used_233=$(echo $((${transfer_enable_Used_233}+${transfer_enable_Used_2_1})))
+		user_list_all=${user_list_all}"Пользователь: ${Green} "${user_username}"${Font_color_suffix} Порт: ${Green}"${user_port}"${Font_color_suffix} Трафик: ${Green}${transfer_enable_Used_2}${Font_color_suffix}\n"
+	done
+	echo && echo -e "${msg[41]} ${Green} "${user_total}" ${Font_color_suffix}"
+	echo -e ${user_list_all}
+
 }
 
 View_User_info() {
