@@ -501,6 +501,7 @@ Add_iptables(){
 
 Del_iptables(){
     if [[ ! -z "${port}" ]]; then
+        iptables -D INPUT -m state --state NEW -m tcp -p tcp --dport ${port} -j ACCEPT
         iptables -D INPUT -m state --state NEW -m udp -p udp --dport ${port} -j ACCEPT
         ip6tables -D INPUT -m state --state NEW -m tcp -p tcp --dport ${port} -j ACCEPT
         ip6tables -D INPUT -m state --state NEW -m udp -p udp --dport ${port} -j ACCEPT

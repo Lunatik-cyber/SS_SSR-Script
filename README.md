@@ -24,7 +24,6 @@ wget https://git.io/svpn.sh && sudo bash svpn.sh
     + Change password  
     + View connected  
     + Support for Russian and English
-
 ____
 Telegram: [**@ShellRok**](https://t.me/ShellRok)  
 
