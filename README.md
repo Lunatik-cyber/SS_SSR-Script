@@ -18,7 +18,8 @@ ____
 wget https://git.io/svpn.sh && sudo bash svpn.sh
 ```
   
-+ **Script capabilities:**      
++ **Script capabilities:**
+    + Adding users      
     + Installation | Deleting  
     + Change password  
     + View connected  

@@ -45,13 +45,13 @@ Server IP: ${Ocean}$(curl -s https://2ip.ru)${Font_end} | ${Ocean}$(cat ${config
 ————————————————————————————————————
 ${Purple}[0]${Font_end} Exit
 —————————— ${Purple}Key management${Font_end} ——————————  
-${Purple}[1]${Font_end} Change Password 
-${Purple}[2]${Font_end} Key data 
-${Purple}[3]${Font_end} Connected 
+${Purple}[1]${Font_end} Change port password 
+${Purple}[2]${Font_end} Port info 
+${Purple}[3]${Font_end} Connections
 ${Purple}[4]${Font_end} Change the server address
 ————————— ${Purple}Status management${Font_end} ————————
 ${Purple}[5]${Font_end} Enable ShadowSocks 
-${Purple}[6]${Font_end} Turn off ShadowSocks 
+${Purple}[6]${Font_end} Disable ShadowSocks
 ${Purple}[7]${Font_end} Restart ShadowSocks
 ———————— ${Purple}Shadowsocks control${Font_end} ———————
 ${Purple}[8]${Font_end} Install ShadowSocks 
@@ -501,7 +501,7 @@ Add_iptables(){
 
 Del_iptables(){
     if [[ ! -z "${port}" ]]; then
-        iptables -D INPUT -m state --state NEW -m tcp -p tcp --dport ${port} -j ACCEPT
+        # iptables -D INPUT -m state --state NEW -m tcp -p tcp --dport ${port} -j ACCEPT
         iptables -D INPUT -m state --state NEW -m udp -p udp --dport ${port} -j ACCEPT
         ip6tables -D INPUT -m state --state NEW -m tcp -p tcp --dport ${port} -j ACCEPT
         ip6tables -D INPUT -m state --state NEW -m udp -p udp --dport ${port} -j ACCEPT
@@ -536,7 +536,7 @@ ${msg[20]}"
 	[[ -z "${port}" ]] && port="1"
 	if [[ ${port} == "1" ]]; then
 		echo -e "${msg[22]}"
-		ssr_port=$(shuf -i 444-999 -n 1)
+		ssr_port=$(shuf -i 100-999 -n 1)
 		echo && echo ${Separator_1} && echo -e "	${msg[2]} ${Green}${ssr_port}${Font_end}" && echo ${Separator_1} && echo
 	elif [[ ${how_to_port} == "2" ]]; then
 		while true; do
@@ -1005,50 +1005,58 @@ menu(){
 		;;
 		1)
 			clear
+			Set_config_all
+			Add_port_user "install"
+			Set_iptables
+			Add_iptables
+			Save_iptables
+		;;
+		2)
+			clear
 			Modify_port
 			Set_config_password
 			Modify_config_password
 		;;
-		2)
+		3)
 			clear
 			View_User
 		;;
-		3)
+		4)
 			clear
 			User_connection_info
 		;;
-		4)
+		5)
 			clear
 			Set_user_api_server_pub_addr "Modify"
 			Modify_user_api_server_pub_addr
 		;;
-		5)
+		6)
 			clear
 			Start_SSR
 			read -n1 -r -p "${msg[1]}"	
 			menu
 		;;
-		6)
+		7)
 			clear
 			Stop_SSR
 			read -n1 -r -p "${msg[1]}"	
 			menu
 		;;
-		7)
+		8)
 			clear
 			Restart_SSR
 			read -n1 -r -p "${msg[1]}"	
 			menu
 		;;
-		8)
+		9)
 			clear
 			Install_SSR
 		;;
-		9)
+		10)
 			clear
 		 	Uninstall_SSR
 	  	;;
-	  	10)
+	  	11)
 			clear
 			Modify_language
 		;;
