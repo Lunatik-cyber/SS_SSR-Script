@@ -45,19 +45,20 @@ Server IP: ${Ocean}$(curl -s https://2ip.ru)${Font_end} | ${Ocean}$(cat ${config
 ————————————————————————————————————
 ${Purple}[0]${Font_end} Exit
 —————————— ${Purple}Key management${Font_end} ——————————  
-${Purple}[1]${Font_end} Change port password 
-${Purple}[2]${Font_end} Port info 
-${Purple}[3]${Font_end} Connections
-${Purple}[4]${Font_end} Change the server address
+${Purple}[1]${Font_end} Add new port
+${Purple}[2]${Font_end} Change port password 
+${Purple}[3]${Font_end} Port info 
+${Purple}[4]${Font_end} Connections
+${Purple}[5]${Font_end} Change the server address
 ————————— ${Purple}Status management${Font_end} ————————
-${Purple}[5]${Font_end} Enable ShadowSocks 
-${Purple}[6]${Font_end} Disable ShadowSocks
-${Purple}[7]${Font_end} Restart ShadowSocks
+${Purple}[6]${Font_end} Enable ShadowSocks 
+${Purple}[7]${Font_end} Disable ShadowSocks
+${Purple}[8]${Font_end} Restart ShadowSocks
 ———————— ${Purple}Shadowsocks control${Font_end} ———————
-${Purple}[8]${Font_end} Install ShadowSocks 
-${Purple}[9]${Font_end} Remove ShadowSocks 
+${Purple}[9]${Font_end} Install ShadowSocks 
+${Purple}[10]${Font_end} Remove ShadowSocks 
 ————————————————————————————————————
-${Purple}[10]${Font_end} Change language
+${Purple}[11]${Font_end} Change language
 ————————————————————————————————————" # 5
 			  "Option: " #6 
 )
