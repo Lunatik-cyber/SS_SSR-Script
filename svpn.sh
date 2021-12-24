@@ -654,9 +654,30 @@ Add_port_user(){
     lalal=$1
     if [[ "$lalal" == "install" ]]; then
     	cd /usr/local/shadowsocksr
+		Set_config_all
         match_add=$(python mujson_mgr.py -a -u "${ssr_user}" -p "${ssr_port}" -k "${ssr_password}" -m "${ssr_method}" -O "${ssr_protocol}" -G "${ssr_protocol_param}" -o "${ssr_obfs}" -s "${ssr_speed_limit_per_con}" -S "${ssr_speed_limit_per_user}" -t "${ssr_transfer}" -f "${ssr_forbid}"|grep -w "add user info")
     else
-    	echo
+    	while true
+		do
+			Set_config_all
+			match_port=$(python mujson_mgr.py -l|grep -w "port ${ssr_port}$")
+			[[ ! -z "${match_port}" ]] && echo -e "${Error} Порт [${ssr_port}] уже используется, выберите другой !" && exit 1
+			match_username=$(python mujson_mgr.py -l|grep -w "user \[${ssr_user}]")
+			[[ ! -z "${match_username}" ]] && echo -e "${Error} Имя пользователя [${ssr_user}] уже используется, выберите другое !" && exit 1
+			match_add=$(python mujson_mgr.py -a -u "${ssr_user}" -p "${ssr_port}" -k "${ssr_password}" -m "${ssr_method}" -O "${ssr_protocol}" -G "${ssr_protocol_param}" -o "${ssr_obfs}" -s "${ssr_speed_limit_per_con}" -S "${ssr_speed_limit_per_user}" -t "${ssr_transfer}" -f "${ssr_forbid}"|grep -w "add user info")
+			if [[ -z "${match_add}" ]]; then
+				echo -e "${Error} Не удалось добавить пользователя ${Blue}[Имя пользователя: ${ssr_user} , Порт: ${ssr_port}]${Font_color_suffix} "
+				break
+			else
+				Add_iptables
+				Save_iptables
+				echo -e "${Info} Пользователь добавлен успешно ${Green}[Пользователь: ${ssr_user} , Порт: ${ssr_port}]${Font_color_suffix} "
+				echo
+				Get_User_info "${ssr_port}"
+				View_User_info
+				break
+			fi
+		done
     fi
 }
 
@@ -1006,11 +1027,7 @@ menu(){
 		;;
 		1)
 			clear
-			Set_config_all
-			Add_port_user "install"
-			Set_iptables
-			Add_iptables
-			Save_iptables
+			Add_port_user
 		;;
 		2)
 			clear
