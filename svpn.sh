@@ -45,19 +45,20 @@ Server IP: ${Ocean}$(curl -s https://2ip.ru)${Font_end} | ${Ocean}$(cat ${config
 ————————————————————————————————————
 ${Purple}[0]${Font_end} Exit
 —————————— ${Purple}Key management${Font_end} ——————————  
-${Purple}[1]${Font_end} Change Password 
-${Purple}[2]${Font_end} Key data 
-${Purple}[3]${Font_end} Connected 
-${Purple}[4]${Font_end} Change the server address
+${Purple}[1]${Font_end} Add new port
+${Purple}[2]${Font_end} Change port password 
+${Purple}[3]${Font_end} Port info 
+${Purple}[4]${Font_end} Connections
+${Purple}[5]${Font_end} Change the server address
 ————————— ${Purple}Status management${Font_end} ————————
-${Purple}[5]${Font_end} Enable ShadowSocks 
-${Purple}[6]${Font_end} Turn off ShadowSocks 
-${Purple}[7]${Font_end} Restart ShadowSocks
+${Purple}[6]${Font_end} Enable ShadowSocks 
+${Purple}[7]${Font_end} Disable ShadowSocks
+${Purple}[8]${Font_end} Restart ShadowSocks
 ———————— ${Purple}Shadowsocks control${Font_end} ———————
-${Purple}[8]${Font_end} Install ShadowSocks 
-${Purple}[9]${Font_end} Remove ShadowSocks 
+${Purple}[9]${Font_end} Install ShadowSocks 
+${Purple}[10]${Font_end} Remove ShadowSocks 
 ————————————————————————————————————
-${Purple}[10]${Font_end} Change language
+${Purple}[11]${Font_end} Change language
 ————————————————————————————————————" # 5
 			  "Option: " #6 
 )
@@ -109,6 +110,7 @@ message_en=( "English" # 0
     		 "Number of IP addresses:" # 38
     		 "Connected:" # 39
     		 "Traffic:" # 40
+			 "All Users" # 41
 )
 
 setup_en=( "English" # 0
@@ -536,7 +538,7 @@ ${msg[20]}"
 	[[ -z "${port}" ]] && port="1"
 	if [[ ${port} == "1" ]]; then
 		echo -e "${msg[22]}"
-		ssr_port=$(shuf -i 444-999 -n 1)
+		ssr_port=$(shuf -i 100-999 -n 1)
 		echo && echo ${Separator_1} && echo -e "	${msg[2]} ${Green}${ssr_port}${Font_end}" && echo ${Separator_1} && echo
 	elif [[ ${how_to_port} == "2" ]]; then
 		while true; do
@@ -653,9 +655,30 @@ Add_port_user(){
     lalal=$1
     if [[ "$lalal" == "install" ]]; then
     	cd /usr/local/shadowsocksr
+		Set_config_all
         match_add=$(python mujson_mgr.py -a -u "${ssr_user}" -p "${ssr_port}" -k "${ssr_password}" -m "${ssr_method}" -O "${ssr_protocol}" -G "${ssr_protocol_param}" -o "${ssr_obfs}" -s "${ssr_speed_limit_per_con}" -S "${ssr_speed_limit_per_user}" -t "${ssr_transfer}" -f "${ssr_forbid}"|grep -w "add user info")
     else
-    	echo
+    	while true
+		do
+			Set_config_all
+			match_port=$(python mujson_mgr.py -l|grep -w "port ${ssr_port}$")
+			[[ ! -z "${match_port}" ]] && echo -e "${Error} Порт [${ssr_port}] уже используется, выберите другой !" && exit 1
+			match_username=$(python mujson_mgr.py -l|grep -w "user \[${ssr_user}]")
+			[[ ! -z "${match_username}" ]] && echo -e "${Error} Имя пользователя [${ssr_user}] уже используется, выберите другое !" && exit 1
+			match_add=$(python mujson_mgr.py -a -u "${ssr_user}" -p "${ssr_port}" -k "${ssr_password}" -m "${ssr_method}" -O "${ssr_protocol}" -G "${ssr_protocol_param}" -o "${ssr_obfs}" -s "${ssr_speed_limit_per_con}" -S "${ssr_speed_limit_per_user}" -t "${ssr_transfer}" -f "${ssr_forbid}"|grep -w "add user info")
+			if [[ -z "${match_add}" ]]; then
+				echo -e "${Error} Не удалось добавить пользователя ${Blue}[Имя пользователя: ${ssr_user} , Порт: ${ssr_port}]${Font_color_suffix} "
+				break
+			else
+				Add_iptables
+				Save_iptables
+				echo -e "${Info} Пользователь добавлен успешно ${Green}[Пользователь: ${ssr_user} , Порт: ${ssr_port}]${Font_color_suffix} "
+				echo
+				Get_User_info "${ssr_port}"
+				View_User_info
+				break
+			fi
+		done
     fi
 }
 
@@ -890,11 +913,19 @@ List_port_user(){
 	user_info=$(python mujson_mgr.py -l)
 	user_total=$(echo "${user_info}"|wc -l)
 	[[ -z ${user_info} ]] && echo -e "${msg[35]}" && read -n1 -r -p "${msg[1]}"	&& menu
-	user_port=$(echo "${user_info}"|sed -n "1p"|awk '{print $4}')
-	user_username=$(echo "${user_info}"|sed -n "1p"|awk '{print $2}'|sed 's/\[//g;s/\]//g')
-	Get_User_transfer "${user_port}"
-	transfer_enable_Used_233=$(echo $((${transfer_enable_Used_233}+${transfer_enable_Used_2_1})))
-	echo -e "${msg[35]} ${Green}${user_username}${Font_end} | ${msg[2]} ${Green}${user_port}${Font_end} | ${msg[40]} ${Green}${transfer_enable_Used_2}${Font_end}"
+	user_list_all=""
+	for ((integer=1; integer <= $user_total; integer++))
+	do
+		user_port=$(echo "${user_info}"|sed -n "${integer}p"|awk '{print $4}')
+		user_username=$(echo "${user_info}"|sed -n "${integer}p"|awk '{print $2}'|sed 's/\[//g;s/\]//g')
+		Get_User_transfer "${user_port}"
+		transfer_enable_Used_233=$(echo $((${transfer_enable_Used_233}+${transfer_enable_Used_2_1})))
+		user_list_all=${user_list_all}"${msg[35]}: ${Green} "${user_username}"${Font_color_suffix} ${msg[2]} ${Green}"${user_port}"${Font_color_suffix} ${msg[40]} ${Green}${transfer_enable_Used_2}${Font_color_suffix}\n"
+	done
+	echo && echo -e "${msg[41]} ${Green} "${user_total}" ${Font_color_suffix}"
+	echo Separator_1
+	echo -e ${user_list_all}
+
 }
 
 View_User_info() {
@@ -1005,50 +1036,54 @@ menu(){
 		;;
 		1)
 			clear
+			Add_port_user
+		;;
+		2)
+			clear
 			Modify_port
 			Set_config_password
 			Modify_config_password
 		;;
-		2)
+		3)
 			clear
 			View_User
 		;;
-		3)
+		4)
 			clear
 			User_connection_info
 		;;
-		4)
+		5)
 			clear
 			Set_user_api_server_pub_addr "Modify"
 			Modify_user_api_server_pub_addr
 		;;
-		5)
+		6)
 			clear
 			Start_SSR
 			read -n1 -r -p "${msg[1]}"	
 			menu
 		;;
-		6)
+		7)
 			clear
 			Stop_SSR
 			read -n1 -r -p "${msg[1]}"	
 			menu
 		;;
-		7)
+		8)
 			clear
 			Restart_SSR
 			read -n1 -r -p "${msg[1]}"	
 			menu
 		;;
-		8)
+		9)
 			clear
 			Install_SSR
 		;;
-		9)
+		10)
 			clear
 		 	Uninstall_SSR
 	  	;;
-	  	10)
+	  	11)
 			clear
 			Modify_language
 		;;
