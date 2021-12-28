@@ -5,8 +5,7 @@ ____
 wget https://git.io/svpn.sh && sudo bash svpn.sh
 ```
   
-+ **Возможности скрипта:**  
-    + Добавление пользователей    
++ **Возможности скрипта:**    
     + Установка | Удаление  
     + Изменение пароля  
     + Просмотр подключенных к ключу  
@@ -20,7 +19,6 @@ wget https://git.io/svpn.sh && sudo bash svpn.sh
 ```
 
 + **Script capabilities:**
-    + Adding users      
     + Installation | Deleting  
     + Change password  
     + View connected  
